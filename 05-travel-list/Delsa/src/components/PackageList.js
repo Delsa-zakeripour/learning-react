@@ -7,14 +7,15 @@ export default function PackingList({
   onToggleItem,
   onClearList,
 }) {
-  const [sortBy, setSortBy] = useState("description");
-
+  const [sortBy, setSortBy] = useState("packed");
   let sortedItems;
 
   if (sortBy === "packed")
     sortedItems = items
       .slice()
       .sort((a, b) => Number(a.packed) - Number(b.packed));
+
+  // .sort((a , b) =>  Number(b.packed)) - Number(a.packed));
 
   if (sortBy === "input") sortedItems = items;
 
