@@ -13,7 +13,7 @@ const starCountainer = {
 };
 
 export default function StarRating({
-  maxRaiting = 6,
+  maxRaiting = 10,
   color = "yellow",
   size = 48,
   className,
