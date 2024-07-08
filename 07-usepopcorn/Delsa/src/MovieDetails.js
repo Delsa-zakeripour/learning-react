@@ -1,4 +1,3 @@
-import React from "react";
 import StarRating from "./StarRating";
 import { useState, useEffect } from "react";
 
@@ -9,6 +8,8 @@ export default function MovieDetails({
   onCloseMovie,
   setIsLoading,
   onAddWatched,
+  handleCloseMovies,
+  watched,
 }) {
   const [movie, setMovie] = useState({});
   const [userRating, setUserRating] = useState("");
@@ -25,7 +26,12 @@ export default function MovieDetails({
     Genre: genre,
   } = movie;
 
-  console.log(year, title);
+  const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
+
+  const watchUserRating = watched.find(
+    (movie) => movie.imdbID === selectedId
+  )?.userRating;
+  console.log("watchUserRating", watchUserRating);
 
   function handleAdd() {
     const newWatchedMovie = {
@@ -40,33 +46,63 @@ export default function MovieDetails({
     onAddWatched(newWatchedMovie);
     onCloseMovie();
   }
+
   useEffect(
     function () {
       async function getMovieDetails() {
         setIsLoading(true);
+
         const res = await fetch(
           `http://www.omdbapi.com/?&apikey=${KEY}&i=${selectedId}`
         );
         const data = await res.json();
-        console.log(data);
+        console.log("data", data);
         setMovie(data);
         setIsLoading(false);
         setUserRating(true);
       }
+
       getMovieDetails();
     },
-    [selectedId]
+    [selectedId, setIsLoading]
+  );
+
+  // chenge browser title
+  useEffect(
+    function () {
+      // means: if don't have title , don't show the undefined
+      if (!title) return;
+      document.title = `movie: ${title}`;
+
+      return function () {
+        document.title = "usePopcorn";
+      };
+    },
+    [title]
+  );
+
+  useEffect(
+    function () {
+      function callBack(e) {
+        if (e.code === "Escape") {
+          onCloseMovie();
+        }
+      }
+      document.addEventListener("keydown", callBack);
+
+      return function () {
+        document.removeEventListener("keydown", callBack);
+      };
+    },
+    [onCloseMovie]
   );
 
   return (
     <div className="details">
-      {/* {isLoading ? (
-        <Loader />
-      ) : ( */}
       <>
         <header>
           <button className="btn-back" onClick={onCloseMovie}>
-            &larr;
+          +  &larr;
           </button>
           <img src={poster} alt={`Poster of ${title} movie`} />
           <div className="details-overview">
@@ -83,13 +119,21 @@ export default function MovieDetails({
         </header>
         <section>
           <div className="rating">
-            <StarRating maxRating={10} size={24} onSetRating={setUserRating} />
+            {!isWatched ? (
+              <>
+                <StarRating
+                  maxRating={10}
+                  size={24}
+                  onSetRating={setUserRating}
+                />
 
-            {/* {userRating > 0 && ( */}
-            <button className="btn-add" onClick={handleAdd}>
-              + add to list
-            </button>
-            {/* )} */}
+                <button className="btn-add" onClick={handleAdd}>
+                  + add to list
+                </button>
+              </>
+            ) : (
+              <p>You rate this film : {watchUserRating}</p>
+            )}
           </div>
           <p>
             <em>{plot}</em>
@@ -98,7 +142,6 @@ export default function MovieDetails({
           <p>Directed by {director}</p>
         </section>
       </>
-      {/* )} */}
     </div>
   );
 }
