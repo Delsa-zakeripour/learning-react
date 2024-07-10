@@ -102,7 +102,7 @@ export default function MovieDetails({
       <>
         <header>
           <button className="btn-back" onClick={onCloseMovie}>
-          +  &larr;
+           &larr;
           </button>
           <img src={poster} alt={`Poster of ${title} movie`} />
           <div className="details-overview">
