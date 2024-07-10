@@ -73,6 +73,7 @@ export default function App() {
   }
 
   function handleAddWatched(movie) {
+    console.log('movie =====> ' , movie)
     setWatched((watched) => [...watched, movie]);
   }
 

@@ -1,147 +1,154 @@
 import StarRating from "./StarRating";
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 
 const KEY = "5bf31670";
 
 export default function MovieDetails({
-  selectedId,
-  onCloseMovie,
-  setIsLoading,
-  onAddWatched,
-  handleCloseMovies,
-  watched,
-}) {
-  const [movie, setMovie] = useState({});
-  const [userRating, setUserRating] = useState("");
-  const {
-    Title: title,
-    Year: year,
-    Poster: poster,
-    Runtime: runtime,
-    imdbRating,
-    Plot: plot,
-    Released: released,
-    Actors: actors,
-    Director: director,
-    Genre: genre,
-  } = movie;
+                                         selectedId,
+                                         onCloseMovie,
+                                         setIsLoading,
+                                         onAddWatched,
+                                         handleCloseMovies,
+                                         watched,
+                                     }) {
+    const [movie, setMovie] = useState({});
 
-  const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
+    console.log('movie in movie details ', movie)
+    const [userRating, setUserRating] = useState("");
 
-  const watchUserRating = watched.find(
-    (movie) => movie.imdbID === selectedId
-  )?.userRating;
-  console.log("watchUserRating", watchUserRating);
+    console.log('user rating => ', userRating)
+    const {
+        Title: title,
+        Year: year,
+        Poster: poster,
+        Runtime: runtime,
+        imdbRating,
+        Plot: plot,
+        Released: released,
+        Actors: actors,
+        Director: director,
+        Genre: genre,
+    } = movie;
 
-  function handleAdd() {
-    const newWatchedMovie = {
-      imdbID: selectedId,
-      title,
-      year,
-      poster,
-      runtime: Number(runtime.split(" ").at(0)),
-      imdbRating: Number(imdbRating),
-      userRating,
-    };
-    onAddWatched(newWatchedMovie);
-    onCloseMovie();
-  }
+    const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
 
-  useEffect(
-    function () {
-      async function getMovieDetails() {
-        setIsLoading(true);
+    console.log('watched ===> ', watched)
 
-        const res = await fetch(
-          `http://www.omdbapi.com/?&apikey=${KEY}&i=${selectedId}`
-        );
-        const data = await res.json();
-        console.log("data", data);
-        setMovie(data);
-        setIsLoading(false);
-        setUserRating(true);
-      }
+    const watchUserRating = watched.find(
+        (movie) => movie.imdbID === selectedId
+    )?.userRating;
+    console.log("watchUserRating", watchUserRating);
 
-      getMovieDetails();
-    },
-    [selectedId, setIsLoading]
-  );
+    function handleAdd() {
+        const newWatchedMovie = {
+            imdbID: selectedId,
+            title,
+            year,
+            poster,
+            runtime: Number(runtime.split(" ").at(0)),
+            imdbRating: Number(imdbRating),
+            userRating,
+        };
+        onAddWatched(newWatchedMovie);
+        onCloseMovie();
+    }
 
-  // chenge browser title
-  useEffect(
-    function () {
-      // means: if don't have title , don't show the undefined
-      if (!title) return;
-      document.title = `movie: ${title}`;
+    useEffect(
+        function () {
+            async function getMovieDetails() {
+                setIsLoading(true);
 
-      return function () {
-        document.title = "usePopcorn";
-      };
-    },
-    [title]
-  );
+                const res = await fetch(
+                    `http://www.omdbapi.com/?&apikey=${KEY}&i=${selectedId}`
+                );
+                const data = await res.json();
+                console.log("data", data);
+                setMovie(data);
+                setIsLoading(false);
+                // setUserRating(true);
+            }
 
-  useEffect(
-    function () {
-      function callBack(e) {
-        if (e.code === "Escape") {
-          onCloseMovie();
-        }
-      }
-      document.addEventListener("keydown", callBack);
+            getMovieDetails();
+        },
+        [selectedId, setIsLoading]
+    );
 
-      return function () {
-        document.removeEventListener("keydown", callBack);
-      };
-    },
-    [onCloseMovie]
-  );
+    // chenge browser title
+    useEffect(
+        function () {
+            // means: if don't have title , don't show the undefined
+            if (!title) return;
+            document.title = `movie: ${title}`;
 
-  return (
-    <div className="details">
-      <>
-        <header>
-          <button className="btn-back" onClick={onCloseMovie}>
-          +  &larr;
-          </button>
-          <img src={poster} alt={`Poster of ${title} movie`} />
-          <div className="details-overview">
-            <h2>{title}</h2>
-            <p>
-              {released} &bull; {runtime}
-            </p>
-            <p>{genre}</p>
-            <p>
-              <span>⭐️</span>
-              {imdbRating} IMDb rating
-            </p>
-          </div>
-        </header>
-        <section>
-          <div className="rating">
-            {!isWatched ? (
-              <>
-                <StarRating
-                  maxRating={10}
-                  size={24}
-                  onSetRating={setUserRating}
-                />
+            return function () {
+                document.title = "usePopcorn";
+            };
+        },
+        [title]
+    );
 
-                <button className="btn-add" onClick={handleAdd}>
-                  + add to list
-                </button>
-              </>
-            ) : (
-              <p>You rate this film : {watchUserRating}</p>
-            )}
-          </div>
-          <p>
-            <em>{plot}</em>
-          </p>
-          <p>Starring {actors}</p>
-          <p>Directed by {director}</p>
-        </section>
-      </>
-    </div>
-  );
+    useEffect(
+        function () {
+            function callBack(e) {
+                if (e.code === "Escape") {
+                    onCloseMovie();
+                }
+            }
+
+            document.addEventListener("keydown", callBack);
+
+            return function () {
+                document.removeEventListener("keydown", callBack);
+            };
+        },
+        [onCloseMovie]
+    );
+
+    return (
+        <div className="details">
+            <>
+                <header>
+                    <button className="btn-back" onClick={onCloseMovie}>
+                        +  &larr;
+                    </button>
+                    <img src={poster} alt={`Poster of ${title} movie`}/>
+                    <div className="details-overview">
+                        <h2>{title}</h2>
+                        <p>
+                            {released} &bull; {runtime}
+                        </p>
+                        <p>{genre}</p>
+                        <p>
+                            <span>⭐️</span>
+                            {imdbRating} IMDb rating
+                        </p>
+                    </div>
+                </header>
+                <section>
+                    <div className="rating">
+                        {!isWatched ? (
+                            <>
+                                <StarRating
+                                    maxRating={10}
+                                    size={24}
+                                    onSetRating={setUserRating}
+                                />
+
+                                <button className="btn-add" onClick={handleAdd}>
+                                    + add to list
+                                </button>
+                            </>
+                        ) : (
+                            <p>You rate this film : {watchUserRating}</p>
+                        )}
+                    </div>
+                    <p>
+                        <em>{plot}</em>
+                    </p>
+                    <p>Starring {actors}</p>
+                    <p>Directed by {director}</p>
+                </section>
+            </>
+        </div>
+    );
 }
