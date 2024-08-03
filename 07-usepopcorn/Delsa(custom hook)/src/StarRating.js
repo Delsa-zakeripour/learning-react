@@ -22,7 +22,7 @@ export default function StarRating({
   massage = [],
 }) {
   const [rate, setRate] = useState(defaultRating);
-  const [tempRating, settempRating] = useState(0);
+  const [tempRating, setTempRating] = useState(0);
 
   function handleRate(rate) {
     onSetRating(rate);
@@ -42,8 +42,8 @@ export default function StarRating({
             key={i}
             onRate={() => handleRate(i + 1)}
             full={tempRating ? tempRating >= i + 1 : rate >= i + 1}
-            tempRatingEnter={() => settempRating(i + 1)}
-            tempRatingLeave={() => settempRating(0)}
+            tempRatingEnter={() => setTempRating(i + 1)}
+            tempRatingLeave={() => setTempRating(0)}
             color={color}
             size={size}
           />
