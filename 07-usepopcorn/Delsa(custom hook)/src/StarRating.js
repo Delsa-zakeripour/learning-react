@@ -16,6 +16,7 @@ export default function StarRating({
   maxRaiting = 10,
   color = "yellow",
   size = 48,
+  onSetRating,
   className,
   defaultRating = 0,
   massage = [],
@@ -24,6 +25,7 @@ export default function StarRating({
   const [tempRating, settempRating] = useState(0);
 
   function handleRate(rate) {
+    onSetRating(rate);
     setRate(rate);
   }
 
